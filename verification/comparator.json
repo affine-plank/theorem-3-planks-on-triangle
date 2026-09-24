@@ -1,0 +1,7 @@
+{
+  "challenge_module": "Triangle",
+  "solution_module": "Triangle",
+  "theorem_names": ["Triangle.three_planks_cover_triangle"],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": false
+}

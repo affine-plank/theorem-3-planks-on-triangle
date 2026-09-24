@@ -1,0 +1,15 @@
+name = "ThreePlanksOnATriangleVerification"
+
+[[lean_lib]]
+name = "Triangle"
+srcDir = ".."
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.33.1"
+
+[[require]]
+name = "Comparator"
+git = "https://github.com/leanprover/comparator"
+rev = "3927ad383f208ae977c340a91c48ac9b497d2097"

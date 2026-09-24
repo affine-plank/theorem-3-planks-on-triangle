@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/v0.4.schema.json
+version: v0.4
+
+project:
+  name: The affine plank conjecture for three planks on a triangle
+  authors: [Brown Zaz]
+  license: Not specified
+
+sources:
+  - title: An elementary proof of the affine plank conjecture for three planks on a triangle
+    authors: [Brown Zaz]
+    id: https://zazbrown.com/research/paper/affine-plank/three-planks-on-a-triangle/
+    type: original-proof
+    note: >-
+      Proof developed in this project. The linked companion manuscript gives
+      an elementary geometric proof of the same theorem (2026).
+
+automation:
+  methods:
+    - method: agent
+      models: [Claude Fable, Claude Opus, GPT-6 Astra]
+      framework: Claude Code and Codex
+
+status:
+  scope: >-
+    Three planks covering a nondegenerate triangle have total relative width
+    at least one.
+  main_results:
+    - declaration: Triangle.three_planks_cover_triangle
+      file: Triangle.lean
+
+review:
+  status: self-assessed
+  notes: Build, kernel-replay and Comparator instructions are in README.md.

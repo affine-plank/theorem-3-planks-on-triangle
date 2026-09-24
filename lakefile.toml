@@ -1,0 +1,11 @@
+name = "ThreePlanksOnATriangle"
+version = "1.0.0"
+defaultTargets = ["Triangle"]
+
+[[lean_lib]]
+name = "Triangle"
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.33.1"
