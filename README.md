@@ -1,5 +1,7 @@
 # The affine plank conjecture for three planks on a triangle
 
+[![Proof checks](https://github.com/affine-plank/theorem-3-planks-on-triangle/actions/workflows/proof.yml/badge.svg)](https://github.com/affine-plank/theorem-3-planks-on-triangle/actions/workflows/proof.yml)
+
 Three planks covering a triangle have total relative width at least one.
 
 Start with [Triangle.lean](Triangle.lean). It defines the triangle, planks

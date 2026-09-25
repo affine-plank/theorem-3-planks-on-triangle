@@ -5,6 +5,9 @@
 through Lean's kernel. It permits only `propext`, `Quot.sound` and
 `Classical.choice`.
 
+GitHub Actions runs this check with Lean's kernel and with Nanoda, an
+independent checker written in Rust. Each run records the checked commit.
+
 On Linux with systemd, install [Landrun](https://github.com/Zouuup/landrun)
 (requires Go 1.24 or later):
 

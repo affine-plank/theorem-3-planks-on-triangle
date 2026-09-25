@@ -1,0 +1,83 @@
+name: Proof checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  comparator:
+    name: ${{ matrix.kernel }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - kernel: Lean
+            nanoda: false
+          - kernel: Lean and Nanoda
+            nanoda: true
+    defaults:
+      run:
+        working-directory: verification
+    env:
+      LEAN_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version: "1.26.8"
+          cache: false
+
+      - name: Install Landrun
+        env:
+          GOBIN: ${{ runner.temp }}/bin
+        run: |
+          go install github.com/zouuup/landrun/cmd/landrun@811cfff51ceaf3d9843708aa6d22e9b84ccac8b4
+          echo "$GOBIN" >> "$GITHUB_PATH"
+
+      - name: Get Nanoda
+        if: matrix.nanoda
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ammkrn/nanoda_lib
+          ref: 3a2407216ee84a75f9e1aead6803d0578be06ae7
+          path: .ci/nanoda
+          persist-credentials: false
+
+      - name: Build Nanoda
+        if: matrix.nanoda
+        run: |
+          rustup toolchain install 1.85.1 --profile minimal
+          cargo +1.85.1 build --release --locked --jobs 2 \
+            --manifest-path "$GITHUB_WORKSPACE/.ci/nanoda/Cargo.toml"
+          echo "$GITHUB_WORKSPACE/.ci/nanoda/target/release" >> "$GITHUB_PATH"
+
+      - uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: verification
+          auto-config: false
+          build: true
+          build-args: comparator lean4export
+          use-mathlib-cache: true
+          use-github-cache: false
+
+      - name: Check theorem and permitted axioms
+        env:
+          NANODA: ${{ matrix.nanoda }}
+        run: |
+          jq --argjson nanoda "$NANODA" '.enable_nanoda = $nanoda' \
+            comparator.json > "$RUNNER_TEMP/comparator.json"
+          sudo systemd-run --wait --pipe --collect \
+            --uid="$(id -u)" --gid="$(id -g)" \
+            -p NoNewPrivileges=yes -p RestrictAddressFamilies=~AF_UNIX \
+            --working-directory="$PWD" -E HOME="$HOME" -E PATH="$PATH" \
+            -E LEAN_NUM_THREADS="$LEAN_NUM_THREADS" \
+            -- "$(command -v lake)" env comparator "$RUNNER_TEMP/comparator.json"
